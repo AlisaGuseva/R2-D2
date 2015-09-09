@@ -18,15 +18,17 @@ try:
 
     from White.Core.UIItems.Finders import SearchCriteria
 
-    from White.Core.UIItems import Button, TextBox, RadioButton, Label, CheckBox
+    from White.Core.InputDevices import Mouse, Keyboard
 
-    from White.Core.UIItems.ListBoxItems import ListBox, ListItem
+    from White.Core.UIItems import Button, TextBox, RadioButton, Label, CheckBox, Panel
+
+    from White.Core.UIItems.ListBoxItems import ListBox, ListItem, ComboBox
     from White.Core.UIItems.TabItems import Tab, TabPage
     #import White.Core.UIItems
     #logging.warning(repr(dir(White.Core.UIItems)))
     from White.Core.UIItems.TreeItems import Tree, TreeNode
     #from White.Core.UIItems.WindowItems import Window, DisplayState
-    from White.Core.UIItems.MenuItems import Menu
+    from White.Core.UIItems.MenuItems import Menu, PopUpMenu
     from White.Core.UIItems.WindowStripControls import ToolStrip, MenuBar
     #from White.Core.UIItems.ListBoxItems import ComboBox
     #from White.Core.UIItems.TableItems import Table
@@ -100,7 +102,7 @@ def on_enter_test():
 
 def on_enter_suite():
     CONTROLLED_APPS.append([])
-
+    Delay.do_benchmarking()
 
 def on_leave_test():
     for a in CONTROLLED_APPS[-1]:
@@ -419,7 +421,6 @@ WND_ATTRS.add_class_attr('Window', 'merged_texts', get=lambda x: '\n'.join(full_
 WND_FILTER_PARAMS = (
     (pop,), {
        'negative': (('negative', fixed_val(True)),),
-
        'single': (('single', fixed_val(True)),),
        'number': (('number', pop_type(int)),),
        'none': (('none', fixed_val(True)),),
@@ -446,6 +447,7 @@ def _wnd_filter(wlist, single=False, negative=False, none=False, number=None, at
         raise IronbotException('Wnd Filter failed: %s' % msg)
 
     logging.warning('Wnd Filter failed: %s' % msg)
+
     return res
 
 
@@ -528,6 +530,9 @@ CONTROL_TYPES = {
     'tree': Tree,
     'treenode': TreeNode,
     'toolbar': ToolStrip,
+    'panel': Panel,
+    'combobox': ComboBox,
+
 }
 
 
@@ -607,6 +612,7 @@ def menu_item_clicker(m, p):
 CTL_ATTRS.add_attr('menuitem', '', get=(pop_menu_path,), click=(pop_menu_path,))
 CTL_ATTRS.add_class_attr('MenuBar', 'menuitem', get=lambda w, p: w.MenuItem(*p), click=menu_item_clicker)
 CTL_ATTRS.add_class_attr('ToolStrip', 'menuitem', get=lambda w, p: w.MenuItem(*p), click=menu_item_clicker)
+
 #CTL_ATTRS.add_attr('submenu', '', get=(pop,))
 #CTL_ATTRS.add_class_attr('MenuBar', 'submenu', get=lambda w, n: w.SubMenu(n))
 
@@ -644,6 +650,7 @@ def tab_get_selected_idx(x):
 
 CTL_ATTRS.add_attr('selected', '', get=(), set=(pop,))
 CTL_ATTRS.add_class_attr('ListBox', 'selected', get=listbox_get_selected, set=listbox_select_idx)
+CTL_ATTRS.add_class_attr('ComboBox', 'selected',  get=listbox_get_selected, set=listbox_select_idx)
 CTL_ATTRS.add_class_attr('TreeNode', 'selected', get=lambda x: x.IsSelected, set=lambda x, v: x.Select() if str_2_bool(v) else x.UnSelect())
 CTL_ATTRS.add_attr('idx_selected', '', get=(), set=(pop_type(int),))
 CTL_ATTRS.add_class_attr('ListBox', 'idx_selected', get=listbox_get_selected_idx, set=lambda x, i: x.Select(i))
